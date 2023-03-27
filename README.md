@@ -69,4 +69,4 @@ S	The argument received is expected to be a pointer type char * to an array of c
 r	The argument received is expected to be a pointer type char * to an array of characters. Characters from this array are printed in reverse order up to (but not including) a null byte ('\0').
 R	The argument received is expected to be a pointer type char * to an array of characters. Characters from this array are encoded to ROT13 and printed in order up to (but not including a null byte ('\0').
 Author
-Margaret Mbua.
+Margaret Mbua and Nathan Delali Kemeh
