@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "main.h"
 
 unsigned char handle_flags(const char *flag, char *index);
@@ -195,3 +196,6 @@ unsigned int (*handle_specifiers(const char *specifier))(va_list, buffer_t *,
 
 	return (NULL);
 }
+=======
+
+>>>>>>> 447263d8d65a5881ac88072f05ed923aa4099580
