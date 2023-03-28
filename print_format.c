@@ -46,45 +46,6 @@ int _printf(const char *format, ...)
 }
 
 /**
- * write_format - Writes data formatted against some parameters
- * @args_list: The arguments list
- * @fmt_info: The format info parameters that were read
- */
-void write_format(va_list *args_list, fmt_info_t *fmt_info)
-{
-	int i;
-	spec_printer_t spec_printers[] = {
-		{'%', convert_fmt_percent},
-		{'p', convert_fmt_p},
-		{'c', convert_fmt_c},
-		{'s', convert_fmt_s},
-		{'d', convert_fmt_di},
-		{'i', convert_fmt_di},
-		{'X', convert_fmt_xX},
-		{'x', convert_fmt_xX},
-		{'o', convert_fmt_o},
-		{'u', convert_fmt_u},
-		/* #begin custom specifiers */
-		{'b', convert_fmt_b},
-		{'R', convert_fmt_R},
-		{'r', convert_fmt_r},
-		{'S', convert_fmt_S},
-		/* #end */
-		{'F', convert_fmt_fF},
-		{'f', convert_fmt_fF},
-	};
-
-	for (i = 0; i < 23 && spec_printers[i].spec != '\0'; i++)
-	{
-		if (fmt_info->spec == spec_printers[i].spec)
-		{
-			spec_printers[i].print_arg(args_list, fmt_info);
-			break;
-		}
-	}
-}
-
-/**
  * _putstr - writes the given string to the buffer
  * @str: The string to write
  *
