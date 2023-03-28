@@ -1,44 +1,97 @@
-#include <stdarg.h>
-#include <stdlib.h>
 #include "main.h"
 
 /**
- * convert_fmt_b - Prints the binary format of an unsigned int argument
- * @args_list: The arguments list
- * @fmt_info: The format info
+ * convert_S - Converts an argument to a string and
+ *             stores it to a buffer contained in a struct.
+ * @args: A va_list pointing to the argument to be converted.
+ * @flags: Flag modifiers.
+ * @wid: A width modifier.
+ * @prec: A precision modifier.
+ * @len: A length modifier.
+ * @output: A buffer_t struct containing a character array.
+ *
+ * Return: The number of bytes stored to the buffer.
+ *
+ * Description: Non-printable characteres (ASCII values < 32 or >= 127)
+ *              are stored as \x followed by the ASCII code value in hex.
  */
-void convert_fmt_b(va_list *args_list, fmt_info_t *fmt_info)
+unsigned int convert_S(va_list args, buffer_t *output,
+		unsigned char flags, int wid, int prec, unsigned char len)
 {
-	int i, size = 32, len = 0;
-	unsigned int num = va_arg(*args_list, unsigned int), tmp;
-	char *str;
+	char *str, *null = "(null)", *hex = "\\x", zero = '0';
+	int size, index;
+	unsigned int ret = 0;
 
-	str = malloc(sizeof(char) * (size + 1));
-	if (str)
+	(void)len;
+	str = va_arg(args, char *);
+	if (str == NULL)
+		return (_memcpy(output, null, 6));
+
+	for (size = 0; str[size];)
+		size++;
+
+	ret += print_string_width(output, flags, wid, prec, size);
+
+	prec = (prec == -1) ? size : prec;
+	for (index = 0; *(str + index) != '\0' && index < prec; index++)
 	{
-		mem_set(str, size, '\0');
-		tmp = num;
-		for (i = 0; i < size && tmp > 0; i++, len++)
+		if (*(str + index) < 32 || *(str + index) >= 127)
 		{
-			*(str + i) = (tmp % 2) + '0';
-			tmp /= 2;
+			ret += _memcpy(output, hex, 2);
+			if (*(str + index) < 16)
+				ret += _memcpy(output, &zero, 1);
+			ret += convert_ubase(output, *(str + index),
+						 "0123456789ABCDEF", flags, 0, 0);
+			continue;
 		}
-		if (!fmt_info->left)
-		{
-			for (i = 0; i < MAX(len, fmt_info->width) - len; i++)
-				_putchar(fmt_info->pad);
-		}
-		for (i = size - 1; i >= 0; i--)
-		{
-			if (*(str + i) != '\0')
-				_putchar(*(str + i));
-		}
-		if (num == 0)
-			_putchar('0');
-		if (fmt_info->left)
-		{
-			for (i = 0; i < MAX(len, fmt_info->width) - len; i++)
-				_putchar(' ');
-		}
+		ret += _memcpy(output, (str + index), 1);
 	}
+
+	ret += print_neg_width(output, ret, flags, wid);
+
+	return (ret);
+}
+
+/**
+ * convert_r - Reverses a string and stores it
+ *             to a buffer contained in a struct.
+ * @args: A va_list pointing to the string to be reversed.
+ * @flags: Flag modifiers.
+ * @wid: A width modifier.
+ * @prec: A precision modifier.
+ * @len: A length modifier.
+ * @output: A buffer_t struct containing a character array.
+ *
+ * Return: The number of bytes stored to the buffer.
+ */
+unsigned int convert_r(va_list args, buffer_t *output,
+		unsigned char flags, int wid, int prec, unsigned char len)
+{
+	char *str, *null = "(null)";
+	int size, end, i;
+	unsigned int ret = 0;
+
+	(void)flags;
+	(void)len;
+
+	str = va_arg(args, char *);
+	if (str == NULL)
+		return (_memcpy(output, null, 6));
+
+	for (size = 0; *(str + size);)
+		size++;
+
+	ret += print_string_width(output, flags, wid, prec, size);
+
+	end = size - 1;
+	prec = (prec == -1) ? size : prec;
+	for (i = 0; end >= 0 && i < prec; i++)
+	{
+		ret += _memcpy(output, (str + end), 1);
+		end--;
+	}
+
+	ret += print_neg_width(output, ret, flags, wid);
+
+	return (ret);
 }
